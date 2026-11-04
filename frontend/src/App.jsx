@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import bitcoinImg from "./assets/bitcoin.png";
 import ethereumImg from "./assets/ethereum.png";
 
@@ -9,7 +9,9 @@ function App() {
 
   const [coins, setCoins] = useState([]);
 
-  const [error,setError] = useState("");
+  const [error, setError] = useState("");
+
+  const [sortOrder, setSortOrder] = useState("high");
 
   useEffect(() => {
     async function fetchCoins() {
@@ -50,6 +52,16 @@ function App() {
       coin.symbol.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  const sortedCoins = useMemo(() => {
+  return [...filteredCoins].sort((a, b) => {
+    if (sortOrder === "high") {
+      return b.current_price - a.current_price;
+    }
+
+    return a.current_price - b.current_price;
+  });
+}, [filteredCoins, sortOrder]);
+
   return (
     <div>
       <h1>Crypto Tracker</h1>
@@ -64,6 +76,11 @@ function App() {
         />
         <button>Search</button>
       </div>
+
+      <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+        <option value="high">Price: High to Low</option>
+        <option value="low">Price: Low to High</option>
+      </select>
       <section>
         {error && <p>{error}</p>}
         {isLoading && <p>Loading Cryptocurrencies</p>}
@@ -92,7 +109,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {filteredCoins.map((coin) => (
+              {sortedCoins.map((coin) => (
                 <tr key={coin.id}>
                   <td>
                     <img
