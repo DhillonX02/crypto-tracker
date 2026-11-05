@@ -53,14 +53,14 @@ function App() {
   );
 
   const sortedCoins = useMemo(() => {
-  return [...filteredCoins].sort((a, b) => {
-    if (sortOrder === "high") {
-      return b.current_price - a.current_price;
-    }
+    return [...filteredCoins].sort((a, b) => {
+      if (sortOrder === "high") {
+        return b.current_price - a.current_price;
+      }
 
-    return a.current_price - b.current_price;
-  });
-}, [filteredCoins, sortOrder]);
+      return a.current_price - b.current_price;
+    });
+  }, [filteredCoins, sortOrder]);
 
   return (
     <div>
@@ -101,28 +101,32 @@ function App() {
                 </th>
               </tr>
               <tr>
-                <th>image</th>
-                <th>Id</th>
                 <th>Coin</th>
                 <th>Symbol</th>
                 <th>Price</th>
+                <th>Market Cap</th>
+                <th>24h Change</th>
               </tr>
             </thead>
             <tbody>
               {sortedCoins.map((coin) => (
                 <tr key={coin.id}>
-                  <td>
-                    <img
-                      src={coin.image}
-                      alt={coin.name}
-                      width="24"
-                      height="24"
-                    />
-                  </td>
-                  <td>{coin.id}</td>
                   <td>{coin.name}</td>
                   <td>{coin.symbol}</td>
-                  <td>{coin.current_price}</td>
+                  <td>{coin.current_price.toLocaleString("en-US", {
+                    style: "currency",
+                    currency:"USD"
+                  })}</td>
+                  <td>${coin.market_cap?.toLocaleString("en-US") ?? "N/A"}</td>
+                  <td
+                    className={
+                      coin.price_change_percentage_24h >= 0
+                        ? "positive"
+                        : "negative"
+                    }
+                  >
+                    {coin.price_change_percentage_24h?.toFixed(2) ?? "N/A"}
+                  </td>
                 </tr>
               ))}
             </tbody>

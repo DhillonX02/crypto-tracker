@@ -32,3 +32,11 @@ td img{
   height: 28px;
   object-fit: contain;
 }
+
+.positive {
+    color: #22c55e;
+}
+
+.negative {
+    color: #ef4444;
+}
