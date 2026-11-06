@@ -40,3 +40,65 @@ td img{
 .negative {
     color: #ef4444;
 }
+
+.coin-details {
+  margin-top: 30px;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.back-button {
+  padding: 10px 16px;
+  cursor: pointer;
+  margin-bottom: 25px;
+}
+
+.coin-details-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.coin-details-header img {
+  width: 55px;
+  height: 55px;
+}
+
+.coin-details-header h2 {
+  margin: 0;
+}
+
+.coin-price {
+  margin: 25px 0;
+}
+
+.coin-price h1 {
+  margin-bottom: 8px;
+}
+
+.coin-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.stat-card {
+  padding: 18px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.stat-card h4 {
+  margin-top: 0;
+}
+
+.stat-card p {
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .coin-stats {
+    grid-template-columns: 1fr;
+  }
+}

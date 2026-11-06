@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import bitcoinImg from "./assets/bitcoin.png";
-import ethereumImg from "./assets/ethereum.png";
+import CoinDetails from "./components/CoinDetails";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,6 +11,8 @@ function App() {
   const [error, setError] = useState("");
 
   const [sortOrder, setSortOrder] = useState("high");
+
+  const [selectedCoin, setSelectedCoin] = useState(null);
 
   useEffect(() => {
     async function fetchCoins() {
@@ -110,13 +111,18 @@ function App() {
             </thead>
             <tbody>
               {sortedCoins.map((coin) => (
-                <tr key={coin.id}>
+                <tr key={coin.id}
+                  onClick={() => setSelectedCoin(coin)}
+                  style={{cursor: "pointer"}}
+                >
                   <td>{coin.name}</td>
                   <td>{coin.symbol}</td>
-                  <td>{coin.current_price.toLocaleString("en-US", {
-                    style: "currency",
-                    currency:"USD"
-                  })}</td>
+                  <td>
+                    {coin.current_price.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </td>
                   <td>${coin.market_cap?.toLocaleString("en-US") ?? "N/A"}</td>
                   <td
                     className={
@@ -133,6 +139,12 @@ function App() {
           </table>
         )}
       </section>
+
+      {selectedCoin && (
+        <CoinDetails coin = {selectedCoin}
+          onClose={() => setSelectedCoin(null)}
+        />
+      )}
 
       <div></div>
     </div>
