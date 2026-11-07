@@ -1,6 +1,9 @@
+import CoinChart from "./CoinChart";
+
 function CoinDetails({ coin, onClose }) {
   return (
     <div className="coin-details">
+      <CoinChart coinId={coin.id} />
       <button className="back-button" onClick={onClose}>
         ← Back to Market
       </button>
@@ -24,9 +27,7 @@ function CoinDetails({ coin, onClose }) {
 
         <p
           className={
-            coin.price_change_percentage_24h >= 0
-              ? "positive"
-              : "negative"
+            coin.price_change_percentage_24h >= 0 ? "positive" : "negative"
           }
         >
           {coin.price_change_percentage_24h?.toFixed(2) ?? "N/A"}% (24h)

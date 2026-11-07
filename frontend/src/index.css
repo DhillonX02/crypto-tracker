@@ -102,3 +102,20 @@ td img{
     grid-template-columns: 1fr;
   }
 }
+
+.coin-chart {
+  margin-top: 35px;
+}
+
+.chart-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.chart-filters button {
+  padding: 8px 18px;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
