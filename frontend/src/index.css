@@ -119,3 +119,24 @@ td img{
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+
+.watchlist-section {
+  margin-top: 35px;
+  padding: 20px;
+  border: 1px solid #555;
+  border-radius: 12px;
+}
+
+.watchlist-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px;
+  border-bottom: 1px solid #444;
+}
+
+.watchlist-item button {
+  margin-left: auto;
+  cursor: pointer;
+  padding: 8px 14px;
+}

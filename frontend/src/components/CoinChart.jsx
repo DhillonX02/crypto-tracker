@@ -79,7 +79,7 @@ function CoinChart({ coinId }) {
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
 
-            <XAxis dataKey="time" />
+            <XAxis dataKey="timestamp" />
 
             <YAxis domain={["auto", "auto"]} />
 

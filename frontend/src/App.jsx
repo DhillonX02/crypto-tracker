@@ -14,6 +14,18 @@ function App() {
 
   const [selectedCoin, setSelectedCoin] = useState(null);
 
+  const [watchlist, setWatchlist] = useState([]);
+
+  const toggleWatchlist = (coinId) => {
+    setWatchlist((prevWatchlist) => {
+      if (prevWatchlist.includes(coinId)) {
+        return prevWatchlist.filter((id) => id !== coinId);
+      }
+
+      return [...prevWatchlist, coinId];
+    });
+  };
+
   useEffect(() => {
     async function fetchCoins() {
       try {
@@ -37,6 +49,10 @@ function App() {
 
     fetchCoins();
   }, []);
+
+  const watchlistCoins = coins.filter((coin) => {
+    return watchlist.includes(coin.id);
+  });
 
   // hide the loading message after 2 seconds
   useEffect(() => {
@@ -62,6 +78,8 @@ function App() {
       return a.current_price - b.current_price;
     });
   }, [filteredCoins, sortOrder]);
+
+  
 
   return (
     <div>
@@ -90,7 +108,7 @@ function App() {
             <thead>
               <tr>
                 <th
-                  colSpan={5}
+                  colSpan={6}
                   style={{
                     textAlign: "center",
                     padding: "12px",
@@ -107,13 +125,15 @@ function App() {
                 <th>Price</th>
                 <th>Market Cap</th>
                 <th>24h Change</th>
+                <th>Watchlist</th>
               </tr>
             </thead>
             <tbody>
               {sortedCoins.map((coin) => (
-                <tr key={coin.id}
+                <tr
+                  key={coin.id}
                   onClick={() => setSelectedCoin(coin)}
-                  style={{cursor: "pointer"}}
+                  style={{ cursor: "pointer" }}
                 >
                   <td>{coin.name}</td>
                   <td>{coin.symbol}</td>
@@ -133,6 +153,17 @@ function App() {
                   >
                     {coin.price_change_percentage_24h?.toFixed(2) ?? "N/A"}
                   </td>
+
+                  <td>
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleWatchlist(coin.id);
+                      }}
+                    >
+                      {watchlist.includes(coin.id) ? "⭐ Added" : "☆ Add"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -140,8 +171,29 @@ function App() {
         )}
       </section>
 
+      <section className="watchlist-section">
+        <h2>My Watchlist ⭐</h2>
+
+        {watchlistCoins.length === 0 ? (
+          <p>No cryptocurrencies added yet.</p>
+        ) : (
+          watchlistCoins.map((coin) => (
+            <div className="watchlist-item" key={coin.id}>
+              <img src={coin.image} alt={coin.name} width="30" />
+
+              <span>{coin.name}</span>
+
+              <span>${coin.current_price.toLocaleString("en-US")}</span>
+
+              <button onClick={() => toggleWatchlist(coin.id)}>Remove</button>
+            </div>
+          ))
+        )}
+      </section>
+
       {selectedCoin && (
-        <CoinDetails coin = {selectedCoin}
+        <CoinDetails
+          coin={selectedCoin}
           onClose={() => setSelectedCoin(null)}
         />
       )}
