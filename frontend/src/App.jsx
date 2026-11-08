@@ -14,7 +14,11 @@ function App() {
 
   const [selectedCoin, setSelectedCoin] = useState(null);
 
-  const [watchlist, setWatchlist] = useState([]);
+  const [watchlist, setWatchlist] = useState(() => {
+    const savedWatchlist = localStorage.getItem("watchlist");
+
+    return savedWatchlist ? JSON.parse(savedWatchlist) : [];
+  });
 
   const toggleWatchlist = (coinId) => {
     setWatchlist((prevWatchlist) => {
@@ -25,6 +29,10 @@ function App() {
       return [...prevWatchlist, coinId];
     });
   };
+
+  useEffect(() => {
+    localStorage.setItem("watchlist", JSON.stringify(watchlist));
+  },[watchlist])
 
   useEffect(() => {
     async function fetchCoins() {
