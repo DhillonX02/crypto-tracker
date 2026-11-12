@@ -2,8 +2,16 @@ import express from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import authMiddleware from '../middleware/authMiddleware.js'
 
 const router = express.Router();
+
+router.get('/profile',authMiddleware,(req,res) => {
+    return res.status(200).json({
+        message:"Welcome to your profile",
+        user_id: req.user.userId
+    })
+})
 
 router.post("/register", async (req, res) => {
   try {
