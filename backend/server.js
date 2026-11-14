@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js"
+import watchlistRoutes from "./src/routes/watchlistRoutes.js";
 
 
 //Load environment variables
@@ -17,6 +18,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth",authRoutes);
+
+app.use('/api/watchlist',watchlistRoutes);
 
 // Test API route
 app.get('/',(req,res) => {
