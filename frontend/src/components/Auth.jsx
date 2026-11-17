@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Auth({onLogin}) {
+function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -10,59 +10,52 @@ function Auth({onLogin}) {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  setMessage("");
-  setError("");
-  setIsLoading(true);
+    setMessage("");
+    setError("");
+    setIsLoading(true);
 
-  try {
-    const endpoint = isLogin
-      ? "login"
-      : "register";
+    try {
+      const endpoint = isLogin ? "login" : "register";
 
-    const payload = isLogin
-      ? { email, password }
-      : { name, email, password };
+      const payload = isLogin ? { email, password } : { name, email, password };
 
-    const response = await fetch(
-      `http://localhost:5000/api/auth/${endpoint}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `http://localhost:5000/api/auth/${endpoint}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Authentication failed");
       }
-    );
 
-    const data = await response.json();
+      if (isLogin) {
+        onLogin(data.token, data.user);
+      } else {
+        setMessage(data.message || "Registration successful!");
 
-    if (!response.ok) {
-      throw new Error(data.message || "Authentication failed");
+        setName("");
+        setEmail("");
+        setPassword("");
+
+        setIsLogin(true);
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
-
-    if (isLogin) {
-      onLogin(data.token, data.user);
-    } else {
-      setMessage(data.message || "Registration successful!");
-
-      setName("");
-      setEmail("");
-      setPassword("");
-
-      setIsLogin(true);
-    }
-
-  } catch (error) {
-    setError(error.message);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="auth-container">
@@ -82,6 +75,7 @@ const handleSubmit = async (e) => {
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
             />
           )}
 
@@ -114,7 +108,11 @@ const handleSubmit = async (e) => {
 
           <button
             type="button"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setMessage("");
+              setError("");
+            }}
             className="auth-toggle"
           >
             {isLogin ? "Create an account" : "Login instead"}
