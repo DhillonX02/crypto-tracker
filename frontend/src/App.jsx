@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import CoinDetails from "./components/CoinDetails";
 import Auth from "./components/Auth";
 
@@ -44,6 +44,11 @@ function App() {
               }),
         },
       );
+
+      if(response.status === 401) {
+        handleLogout();
+        return;
+      }
 
       const data = await response.json();
 
@@ -123,14 +128,14 @@ function App() {
     setIsAuthenticated(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
     setIsAuthenticated(false);
     setWatchlist([]);
     setSelectedCoin(null);
-  };
+  },[]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -144,6 +149,11 @@ function App() {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        if (response.status === 401) {
+          handleLogout();
+          return;
+        }
 
         const data = await response.json();
 
@@ -160,7 +170,7 @@ function App() {
     };
 
     fetchWatchlist();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, handleLogout]);
 
   return (
     <>
