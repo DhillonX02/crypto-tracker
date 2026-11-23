@@ -26,7 +26,7 @@ function App() {
     try {
       const isAdded = watchlist.includes(coinId);
 
-      const data = await apiRequest(
+      await apiRequest(
         isAdded ? `/watchlist/${coinId}` : "/watchlist/add",
         {
           method: isAdded ? "DELETE" : "POST",
@@ -59,7 +59,7 @@ function App() {
           throw new Error("Failed to fetch crypto data");
         }
 
-        await response.json();
+        const data =await response.json();
         setCoins(data);
       } catch (error) {
         setError(error.message);
