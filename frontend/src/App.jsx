@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import CoinDetails from "./components/CoinDetails";
 import Auth from "./components/Auth";
+import apiRequest, { setUnauthorizedHandler } from "./utils/api";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,38 +24,17 @@ function App() {
 
   const toggleWatchlist = async (coinId) => {
     try {
-      const token = localStorage.getItem("token");
-
       const isAdded = watchlist.includes(coinId);
 
-      const response = await fetch(
-        isAdded
-          ? `http://localhost:5000/api/watchlist/${coinId}`
-          : "http://localhost:5000/api/watchlist/add",
+      const data = await apiRequest(
+        isAdded ? `/watchlist/${coinId}` : "/watchlist/add",
         {
           method: isAdded ? "DELETE" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          ...(isAdded
-            ? {}
-            : {
-                body: JSON.stringify({ coinId }),
-              }),
+          ...(!isAdded && {
+            body: JSON.stringify({ coinId }),
+          }),
         },
       );
-
-      if(response.status === 401) {
-        handleLogout();
-        return;
-      }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Watchlist update failed");
-      }
 
       setWatchlist((prev) =>
         isAdded ? prev.filter((id) => id !== coinId) : [...prev, coinId],
@@ -79,7 +59,7 @@ function App() {
           throw new Error("Failed to fetch crypto data");
         }
 
-        const data = await response.json();
+        await response.json();
         setCoins(data);
       } catch (error) {
         setError(error.message);
@@ -135,7 +115,11 @@ function App() {
     setIsAuthenticated(false);
     setWatchlist([]);
     setSelectedCoin(null);
-  },[]);
+  }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(handleLogout);
+  }, [handleLogout]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
