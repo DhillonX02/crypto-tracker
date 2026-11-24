@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import apiRequest from "../utils/api";
+
 function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
@@ -22,22 +24,10 @@ function Auth({ onLogin }) {
 
       const payload = isLogin ? { email, password } : { name, email, password };
 
-      const response = await fetch(
-        `http://localhost:5000/api/auth/${endpoint}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        },
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Authentication failed");
-      }
+      const data = await apiRequest(`/auth/${endpoint}`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
 
       if (isLogin) {
         onLogin(data.token, data.user);

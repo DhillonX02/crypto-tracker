@@ -126,25 +126,7 @@ function App() {
 
     const fetchWatchlist = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        const response = await fetch("http://localhost:5000/api/watchlist", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 401) {
-          handleLogout();
-          return;
-        }
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch watchlist");
-        }
-
+        const data = await apiRequest("/watchlist");
         const coinIds = data.watchlist.map((item) => item.coinId);
 
         setWatchlist(coinIds);
@@ -154,7 +136,7 @@ function App() {
     };
 
     fetchWatchlist();
-  }, [isAuthenticated, handleLogout]);
+  }, [isAuthenticated]);
 
   return (
     <>
