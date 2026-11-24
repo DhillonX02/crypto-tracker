@@ -2,16 +2,16 @@ import express from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
-import authMiddleware from '../middleware/authMiddleware.js'
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get('/profile',authMiddleware,(req,res) => {
-    return res.status(200).json({
-        message:"Welcome to your profile",
-        user_id: req.user.userId
-    })
-})
+router.get("/profile", authMiddleware, (req, res) => {
+  return res.status(200).json({
+    message: "Welcome to your profile",
+    user_id: req.user.userId,
+  });
+});
 
 router.post("/register", async (req, res) => {
   try {
@@ -41,15 +41,17 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
 
-    console.log("Email variable:", email);
-    console.log("Email in newUser:", newUser.email);
-
     await newUser.save();
 
     res.status(201).json({
       message: "User registered successfully",
     });
   } catch (error) {
+     if (error.code === 11000) {
+      return res.status(409).json({
+        message: "Email already registered",
+      });
+    }
     console.error("Registeration error:", error);
 
     res.status(500).json({
@@ -62,51 +64,51 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({
-      message: "Email and password are required",
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+    }).select("+password");
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        message: "Invalid Email or password",
+      });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || "1d",
     });
-  }
 
-  const normalizedEmail = email.trim().toLowerCase();
-
-  const user = await User.findOne({
-    email: normalizedEmail,
-  });
-
-  if (!user) {
-    return res.status(401).json({
-      message: "Invalid email or password",
-    });
-  }
-
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordCorrect) {
-    return res.status(401).json({
-      message: "Invalid Email or password",
-    });
-  }
-
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "1d",
-  });
-
-  return res.status(201).json({
-    message: "Login successful",
-    token ,
-    user:{
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
         id: user._id,
         name: user.name,
-        email: user.email
-    }
-  })
+        email: user.email,
+      },
+    });
   } catch (error) {
     console.error("Login error:", error);
 
     return res.status(500).json({
-        message:"Internal server error"
-    })
+      message: "Internal server error",
+    });
   }
 });
 

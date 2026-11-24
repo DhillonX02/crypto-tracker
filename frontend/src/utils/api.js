@@ -1,5 +1,9 @@
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!API_BASE_URL) {
+  throw new Error("VITE_API_BASE_URL is not configured");
+}
 
 let onUnauthorized = null;
 
@@ -20,12 +24,16 @@ const apiRequest = async (endpoint, options = {}) => {
   });
 
   if (response.status === 401) {
-    if (onUnauthorized) {
-      onUnauthorized();
-    }
-
-    throw new Error("Session expired. Please login again.");
+  if (!endpoint.startsWith("/auth/login") && onUnauthorized) {
+    onUnauthorized();
   }
+
+  throw new Error(
+    endpoint.startsWith("/auth/login")
+      ? "Invalid email or password"
+      : "Session expired. Please login again."
+  );
+}
 
   const data = await response.json();
 
