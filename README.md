@@ -4,6 +4,10 @@ A full-stack cryptocurrency tracking application that allows users to explore cr
 
 Built using React, Node.js, Express.js, and MongoDB.
 
+## live demo
+https://crypto-tracker-puce-three.vercel.app/
+
+
 ## Features
 
 - Live cryptocurrency market data using CoinGecko API.
@@ -152,3 +156,4 @@ crypto-tracker/
 ├── .gitignore
 └── README.md
 ```
+
